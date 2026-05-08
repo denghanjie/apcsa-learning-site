@@ -103,8 +103,9 @@
       .contact-card {
         margin-top: 16px;
         display: grid;
-        grid-template-columns: max-content minmax(0, 1fr);
-        gap: 18px;
+        grid-template-columns: max-content max-content;
+        gap: 28px;
+        justify-content: center;
         align-items: center;
         padding: 18px;
         border: 1px solid var(--line);
@@ -128,6 +129,7 @@
         width: 104px;
         aspect-ratio: 1;
         object-fit: cover;
+        object-position: top center;
         border: 1px solid var(--line);
         border-radius: 8px;
       }
@@ -145,6 +147,7 @@
       }
 
       .contact-card p {
+        margin: 0;
         color: var(--muted);
       }
 
@@ -168,6 +171,8 @@
 
         .contact-card {
           grid-template-columns: 1fr;
+          justify-items: center;
+          text-align: center;
         }
 
         .qr-list {
