@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AP CSA Tutorials</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="side-panel" aria-label="Tutorial navigation">
+        <header class="brand">
+          <p class="eyebrow">AP Computer Science A</p>
+          <h1>Tutorials</h1>
+        </header>
+
+        <label class="search-box">
+          <span class="visually-hidden">Search tutorials</span>
+          <input id="searchInput" type="search" autocomplete="off" placeholder="Search topics">
+        </label>
+
+        <nav class="unit-nav" id="unitNav" aria-label="Units"></nav>
+
+        <section class="progress-panel" aria-label="Progress">
+          <div>
+            <span class="label">Completed</span>
+            <strong id="completeCount">0</strong>
+          </div>
+          <div>
+            <span class="label">Remaining</span>
+            <strong id="remainingCount">0</strong>
+          </div>
+        </section>
+
+        <section class="contact-card" aria-label="Contact">
+          <div class="qr-block">
+            <img src="../QRCode.jpg" alt="WeChat QR code for 心奇好">
+            <span>微信扫码</span>
+          </div>
+          <div>
+            <h2>心奇好</h2>
+            <p>Author</p>
+          </div>
+        </section>
+      </aside>
+
+      <main class="workspace">
+        <section class="topic-rail" aria-label="Topics">
+          <div class="topic-rail-head">
+            <p class="eyebrow" id="activeUnitLabel">Unit</p>
+            <h2 id="activeUnitTitle">Topics</h2>
+          </div>
+          <div class="topic-list" id="topicList"></div>
+        </section>
+
+        <section class="lesson-stage">
+          <article class="lesson-panel" aria-labelledby="lessonTitle">
+            <header class="lesson-head">
+              <div>
+                <p class="eyebrow" id="lessonMeta">Topic</p>
+                <h2 id="lessonTitle"></h2>
+              </div>
+              <div class="lesson-actions">
+                <button class="ghost-btn" id="prevBtn" type="button">Previous</button>
+                <button class="ghost-btn" id="nextBtn" type="button">Next</button>
+                <button class="primary-btn" id="completeBtn" type="button" aria-pressed="false">Mark Complete</button>
+              </div>
+            </header>
+
+            <div class="section-tabs" id="sectionTabs" aria-label="Lesson sections"></div>
+            <div class="lesson-content" id="lessonContent"></div>
+          </article>
+
+          <aside class="study-panel" aria-label="Practice and notes">
+            <section class="tool-panel">
+              <h2>Practice</h2>
+              <div id="practicePanel"></div>
+            </section>
+
+            <section class="tool-panel">
+              <h2>Notes</h2>
+              <textarea id="notesArea" rows="10" spellcheck="true" placeholder="Your notes for this topic"></textarea>
+            </section>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script src="tutorial-data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

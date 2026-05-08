@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AP CSA Diagnostic</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <section class="intro-screen" id="introPanel" aria-label="Diagnostic start">
+      <div class="intro-content">
+        <p class="eyebrow">AP Computer Science A</p>
+        <h1>Diagnostic Test</h1>
+        <p class="intro-copy">28 multiple-choice questions. 4 free-response questions. Personalized report after submission.</p>
+        <button class="primary-btn start-btn" id="startBtn" type="button">Start Diagnostic</button>
+        <section class="contact-card intro-contact" aria-label="Contact">
+          <div class="qr-block">
+            <img src="../QRCode.jpg" alt="WeChat QR code for 心奇好">
+            <span>微信扫码</span>
+          </div>
+          <div>
+            <h2>心奇好</h2>
+            <p>Author</p>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <div class="app-shell hidden" id="appShell">
+      <aside class="sidebar" aria-label="Test navigation">
+        <div class="brand-block">
+          <p class="eyebrow">AP Computer Science A</p>
+          <h1>Diagnostic</h1>
+          <p class="scoreline"><span id="answeredCount">0</span>/<span id="questionCount">32</span> answered</p>
+        </div>
+
+        <div class="status-panel">
+          <div>
+            <span class="label">Score</span>
+            <strong id="liveScore">Hidden</strong>
+          </div>
+          <div>
+            <span class="label">Timer</span>
+            <strong id="timer">00:00</strong>
+          </div>
+        </div>
+
+        <nav class="unit-nav" id="unitNav"></nav>
+
+        <div class="sidebar-actions">
+          <button class="primary-btn" id="submitBtn" type="button">Generate Report</button>
+          <button class="ghost-btn" id="resetBtn" type="button">Reset</button>
+        </div>
+
+        <section class="contact-card sidebar-contact" aria-label="Contact">
+          <div class="qr-block">
+            <img src="../QRCode.jpg" alt="WeChat QR code for 心奇好">
+            <span>微信扫码</span>
+          </div>
+          <div>
+            <h2>心奇好</h2>
+            <p>Author</p>
+          </div>
+        </section>
+      </aside>
+
+      <main class="content">
+        <section class="toolbar" aria-label="Test controls">
+          <div class="toolbar-tabs" id="sectionTabs"></div>
+          <div class="toolbar-actions">
+            <button class="ghost-btn small" id="saveBtn" type="button">Save</button>
+            <button class="ghost-btn small" id="printBtn" type="button">Print</button>
+          </div>
+        </section>
+
+        <section id="testPanel" class="panel active" aria-label="Diagnostic test">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Section I</p>
+              <h2>Multiple Choice</h2>
+            </div>
+            <span class="pill">56 points</span>
+          </div>
+          <div id="mcqList" class="question-list"></div>
+
+          <div class="section-heading frq-heading">
+            <div>
+              <p class="eyebrow">Section II</p>
+              <h2>Free Response</h2>
+            </div>
+            <span class="pill">44 points</span>
+          </div>
+          <div id="frqList" class="question-list"></div>
+        </section>
+
+        <section id="reportPanel" class="panel" aria-live="polite">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Result</p>
+              <h2>Report and Study Plan</h2>
+            </div>
+            <button class="primary-btn" id="backToTestBtn" type="button">Back to Test</button>
+          </div>
+          <div id="reportContent"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
