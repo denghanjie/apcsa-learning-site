@@ -198,13 +198,19 @@ textarea:focus-visible {
 
 .contact-card {
   display: grid;
-  grid-template-columns: 70px minmax(0, 1fr);
+  grid-template-columns: max-content minmax(0, 1fr);
   gap: 12px;
   align-items: center;
   padding: 10px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
+}
+
+.qr-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .qr-block {
@@ -639,7 +645,11 @@ textarea {
   }
 
   .contact-card {
-    grid-template-columns: 58px minmax(0, 1fr);
+    grid-template-columns: 1fr;
+  }
+
+  .qr-list {
+    justify-content: center;
   }
 
   .qr-block img {

@@ -39,6 +39,8 @@ Displayed contact:
 - 心奇好
 - Author
 - WeChat QR image
+- 小红书：crying_baby
+- 小红书 QR image
 
 ## After Future Edits
 
