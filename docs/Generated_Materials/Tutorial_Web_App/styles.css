@@ -67,31 +67,32 @@ textarea:focus-visible {
 .app-shell {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-columns: 280px minmax(0, 1fr);
 }
 
 .side-panel {
   position: sticky;
   top: 0;
   height: 100vh;
+  overflow-y: auto;
   padding: 22px;
   border-right: 1px solid var(--line);
   background: #fbfcfa;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 
 .brand h1,
 .topic-rail-head h2,
 .lesson-head h2,
-.tool-panel h2 {
+.notes-head h2 {
   margin: 0;
   letter-spacing: 0;
 }
 
 .brand h1 {
-  font-size: 34px;
+  font-size: 32px;
   line-height: 1;
 }
 
@@ -114,9 +115,46 @@ textarea:focus-visible {
   color: var(--ink);
 }
 
+.mode-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #eef2ee;
+}
+
+.mode-tab {
+  min-height: 34px;
+  padding: 7px 6px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.mode-tab.active {
+  background: var(--surface);
+  color: var(--accent-strong);
+  box-shadow: 0 1px 4px rgba(25, 35, 31, 0.08);
+}
+
 .unit-nav {
   display: grid;
   gap: 8px;
+  min-height: 0;
+  max-height: 42vh;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.picker-nav {
+  display: block;
+  max-height: none;
+  overflow: visible;
+  padding-right: 0;
 }
 
 .unit-btn,
@@ -196,6 +234,29 @@ textarea:focus-visible {
   font-size: 22px;
 }
 
+.context-picker {
+  display: grid;
+  gap: 7px;
+}
+
+.context-picker span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.context-picker select {
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 38px 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 800;
+}
+
 .contact-card {
   display: grid;
   grid-template-columns: 1fr;
@@ -226,6 +287,7 @@ textarea:focus-visible {
   width: 70px;
   aspect-ratio: 1;
   object-fit: cover;
+  object-position: top center;
   border: 1px solid var(--line);
   border-radius: 8px;
 }
@@ -262,19 +324,20 @@ textarea:focus-visible {
 
 .workspace {
   min-width: 0;
-  display: grid;
-  grid-template-columns: 330px minmax(0, 1fr);
+  display: block;
 }
 
 .topic-rail {
-  min-height: 100vh;
-  padding: 22px;
-  border-right: 1px solid var(--line);
+  min-height: 0;
+  display: block;
+  padding: 22px 28px 0;
+  border-right: 0;
+  border-bottom: 1px solid var(--line);
   background: #f9faf7;
 }
 
 .topic-rail-head {
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .topic-rail-head h2 {
@@ -282,18 +345,33 @@ textarea:focus-visible {
   line-height: 1.2;
 }
 
+.context-description {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+  max-width: 860px;
+}
+
 .topic-list {
-  display: grid;
+  display: flex;
   gap: 8px;
+  min-height: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 2px 2px 16px;
+  scroll-snap-type: x proximity;
 }
 
 .topic-btn {
-  min-height: 56px;
+  flex: 0 0 230px;
+  min-height: 68px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 10px;
-  padding: 11px 12px;
+  padding: 12px;
+  scroll-snap-align: start;
 }
 
 .topic-title {
@@ -312,21 +390,21 @@ textarea:focus-visible {
 
 .topic-title span {
   color: var(--muted);
-  font-size: 13px;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 14px;
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
 
 .lesson-stage {
   min-width: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 310px;
-  gap: 22px;
-  padding: 22px;
+  padding: 28px;
 }
 
-.lesson-panel,
-.tool-panel {
+.lesson-panel {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
@@ -335,6 +413,8 @@ textarea:focus-visible {
 
 .lesson-panel {
   min-width: 0;
+  max-width: 1100px;
+  margin: 0 auto;
   overflow: hidden;
 }
 
@@ -342,13 +422,13 @@ textarea:focus-visible {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 18px;
-  padding: 24px;
+  gap: 28px;
+  padding: 34px 42px 30px;
   border-bottom: 1px solid var(--line);
 }
 
 .lesson-head h2 {
-  font-size: 30px;
+  font-size: 36px;
   line-height: 1.15;
 }
 
@@ -356,6 +436,7 @@ textarea:focus-visible {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
+  min-width: 235px;
   gap: 8px;
 }
 
@@ -373,6 +454,12 @@ textarea:focus-visible {
 
 .primary-btn.is-complete {
   background: var(--ruby);
+}
+
+.ghost-btn.active {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
 }
 
 .ghost-btn {
@@ -398,9 +485,10 @@ textarea:focus-visible {
 
 .section-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
-  overflow-x: auto;
-  padding: 14px 24px;
+  overflow-x: visible;
+  padding: 16px 42px;
   border-bottom: 1px solid var(--line);
 }
 
@@ -415,16 +503,46 @@ textarea:focus-visible {
   font-weight: 800;
 }
 
+.notes-drawer {
+  display: none;
+  padding: 18px 42px;
+  border-bottom: 1px solid var(--line);
+  background: #fbfcfa;
+}
+
+.notes-drawer.active {
+  display: block;
+}
+
+.notes-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.notes-head h2 {
+  font-size: 18px;
+}
+
+.small-btn {
+  min-height: 34px;
+  padding: 7px 10px;
+  font-size: 13px;
+}
+
 .lesson-content {
-  max-width: 880px;
-  padding: 10px 24px 34px;
-  line-height: 1.65;
+  max-width: none;
+  padding: 24px 42px 58px;
+  font-size: 17px;
+  line-height: 1.72;
 }
 
 .lesson-content h2,
 .lesson-content h3 {
-  margin: 30px 0 10px;
-  font-size: 21px;
+  margin: 32px 0 12px;
+  font-size: 24px;
   line-height: 1.25;
 }
 
@@ -449,8 +567,7 @@ textarea:focus-visible {
   margin-top: 4px;
 }
 
-.lesson-content code,
-.tool-panel code {
+.lesson-content code {
   border-radius: 5px;
   padding: 2px 5px;
   background: #eef2ee;
@@ -459,18 +576,16 @@ textarea:focus-visible {
   font-size: 0.92em;
 }
 
-.lesson-content pre,
-.tool-panel pre {
+.lesson-content pre {
   overflow-x: auto;
-  margin: 14px 0;
-  padding: 14px;
+  margin: 16px 0;
+  padding: 18px;
   border-radius: 8px;
   background: var(--code-bg);
   color: var(--code-ink);
 }
 
-.lesson-content pre code,
-.tool-panel pre code {
+.lesson-content pre code {
   padding: 0;
   background: transparent;
   color: inherit;
@@ -495,52 +610,10 @@ textarea:focus-visible {
   background: var(--surface-soft);
 }
 
-.study-panel {
-  min-width: 0;
-  display: grid;
-  align-content: start;
-  gap: 16px;
-}
-
-.tool-panel {
-  padding: 18px;
-  box-shadow: none;
-}
-
-.tool-panel h2 {
-  margin-bottom: 12px;
-  font-size: 18px;
-}
-
 .empty-state {
   margin: 0;
   color: var(--muted);
   line-height: 1.45;
-}
-
-.practice-item {
-  border-top: 1px solid var(--line);
-  padding-top: 12px;
-}
-
-.practice-item:first-child {
-  border-top: 0;
-  padding-top: 0;
-}
-
-.practice-item + .practice-item {
-  margin-top: 14px;
-}
-
-.practice-item h3 {
-  margin: 0 0 8px;
-  font-size: 15px;
-}
-
-.practice-body {
-  color: var(--ink);
-  font-size: 14px;
-  line-height: 1.5;
 }
 
 .answer-toggle {
@@ -564,7 +637,7 @@ textarea:focus-visible {
 
 textarea {
   width: 100%;
-  min-height: 190px;
+  min-height: 360px;
   resize: vertical;
   padding: 11px;
   border: 1px solid var(--line);
@@ -584,45 +657,35 @@ textarea {
   font-weight: 800;
 }
 
-@media (max-width: 1180px) {
-  .workspace {
-    grid-template-columns: 280px minmax(0, 1fr);
-  }
-
-  .lesson-stage {
-    grid-template-columns: 1fr;
-  }
-
-  .study-panel {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
 @media (max-width: 900px) {
-  .app-shell,
-  .workspace {
+  .app-shell {
     display: block;
   }
 
   .side-panel {
     position: static;
     height: auto;
+    overflow: visible;
     border-right: 0;
     border-bottom: 1px solid var(--line);
   }
 
   .unit-nav {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-height: none;
+    padding-right: 0;
   }
 
   .topic-rail {
     min-height: auto;
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
   }
 
-  .topic-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .topic-rail {
+    padding: 18px 22px 0;
+  }
+
+  .topic-btn {
+    flex-basis: 220px;
   }
 
   .lesson-head {
@@ -631,6 +694,7 @@ textarea {
 
   .lesson-actions {
     justify-content: flex-start;
+    min-width: 0;
   }
 }
 
@@ -641,10 +705,29 @@ textarea {
     padding: 16px;
   }
 
-  .unit-nav,
-  .topic-list,
-  .study-panel {
+  .unit-nav {
     grid-template-columns: 1fr;
+  }
+
+  .topic-rail {
+    padding-bottom: 0;
+  }
+
+  .topic-btn {
+    flex-basis: min(78vw, 260px);
+  }
+
+  .brand h1 {
+    font-size: 30px;
+  }
+
+  .mode-tab {
+    min-height: 40px;
+    font-size: 13px;
+  }
+
+  .context-picker select {
+    min-height: 46px;
   }
 
   .contact-card {
@@ -665,9 +748,16 @@ textarea {
 
   .section-tabs {
     padding: 12px 18px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .notes-drawer {
+    padding: 16px 18px;
   }
 
   .lesson-content {
     padding: 8px 18px 26px;
+    font-size: 16px;
   }
 }

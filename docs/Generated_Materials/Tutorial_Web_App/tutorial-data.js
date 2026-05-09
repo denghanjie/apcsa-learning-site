@@ -1,6 +1,274 @@
 window.APCSA_TUTORIAL_DATA = {
   "title": "AP CSA Detailed Tutorials",
   "topicCount": 53,
+  "bridgeLessons": [
+    {
+      "id": "B-OBJECT-MODEL",
+      "title": "Bridge: From Values to Objects",
+      "unit": "Bridge",
+      "type": "bridge",
+      "source": "Guided learning path",
+      "body": "### Why This Bridge Exists\nEarly Java feels like arithmetic: store numbers, combine them, print answers. Objects add a new question: what if one value is not enough to describe the thing we care about?\n\nA `String` is not just letters. It is an object with stored text and methods such as `length`, `substring`, and `indexOf`. The same mental model will later apply to `Student`, `ScoreReport`, `ArrayList`, and arrays of objects.\n\n### Learn\nA primitive variable stores a direct value. A reference variable stores a way to find an object.\n\n| Kind | Example | What the variable holds |\n| --- | --- | --- |\n| primitive | `int score = 95;` | the number 95 |\n| reference | `String name = \"Ava\";` | a reference to a String object |\n\nThis matters because method calls use the object that the reference points to.\n\n```java\nString word = \"study\";\nint count = word.length();\n```\n\n`word.length()` means: go to the `String` object referred to by `word`, then ask that object for its length.\n\n### Predict\nBefore running the code, decide what prints.\n\n```java\nString a = \"APCSA\";\nString b = a.substring(2);\nSystem.out.println(a);\nSystem.out.println(b);\n```\n\n### Misconception Check\n- Calling a method does not always change the object. Many `String` methods return a new value.\n- A reference variable is not the whole object. It is the handle used to reach the object.\n- `null` means the reference currently points to no object.\n\n### Practice\nExplain in one sentence why `word.length()` needs parentheses but `score` does not.\n\nPossible answer: `length` is a method call that asks an object to do work and return a result; `score` is just a variable value."
+    },
+    {
+      "id": "B-CLASS-DESIGN-STORY",
+      "title": "Bridge: From Using Objects to Designing Objects",
+      "unit": "Bridge",
+      "type": "bridge",
+      "source": "Guided learning path",
+      "body": "### Why This Bridge Exists\nUnit 1 teaches you to use objects that Java already gives you. Unit 3 asks you to design your own objects. The shift is from consumer to builder.\n\nA good class answers three questions: what data should each object remember, what actions should it support, and what details should stay hidden?\n\n### Learn\nImagine a quiz app needs many questions. A plain set of variables becomes messy:\n\n```java\nString prompt1 = \"What is 2 + 3?\";\nint answer1 = 5;\nString prompt2 = \"What is 4 + 1?\";\nint answer2 = 5;\n```\n\nA class groups related data and behavior.\n\n```java\npublic class Question {\n  private String prompt;\n  private int answer;\n\n  public Question(String p, int a) {\n    prompt = p;\n    answer = a;\n  }\n\n  public boolean isCorrect(int response) {\n    return response == answer;\n  }\n}\n```\n\n### Predict\nWhich parts belong to each object separately? Which part is the method every `Question` object can perform?\n\n### Misconception Check\n- A class is the blueprint; an object is one actual instance created from that blueprint.\n- Instance variables should usually be `private` because other code should interact through methods.\n- A constructor initializes a new object; it does not have a return type.\n\n### Practice\nDesign the instance variables for a `Song` class. Then write one method idea that would use those variables.\n\nPossible answer: `private String title; private int seconds;` and a method `isLong()` that returns whether `seconds > 300`."
+    },
+    {
+      "id": "B-ARRAYLIST-NEED",
+      "title": "Bridge: Why Arrays Are Not Always Enough",
+      "unit": "Bridge",
+      "type": "bridge",
+      "source": "Guided learning path",
+      "body": "### Why This Bridge Exists\nArrays are perfect when the size is known and stable. Many real problems are not like that. A diagnostic app might collect responses one at a time, and the number of answers may grow as students work.\n\nThat is the problem `ArrayList` solves: a sequence whose size can change.\n\n### Learn\nUse an array when the length is fixed:\n\n```java\nint[] scores = new int[5];\nscores[0] = 92;\n```\n\nUse an `ArrayList` when items may be added or removed:\n\n```java\nArrayList<String> names = new ArrayList<String>();\nnames.add(\"Ava\");\nnames.add(\"Leo\");\nnames.remove(0);\n```\n\nThe main tradeoff is that an array uses bracket access and has a fixed `length`, while an `ArrayList` uses methods such as `add`, `get`, `set`, `remove`, and `size`.\n\n### Predict\nWhat does this code print?\n\n```java\nArrayList<String> names = new ArrayList<String>();\nnames.add(\"Ava\");\nnames.add(\"Leo\");\nnames.add(1, \"Mia\");\nSystem.out.println(names.get(1));\nSystem.out.println(names.size());\n```\n\n### Misconception Check\n- `arr.length` is a field; `list.size()` is a method.\n- `list.get(i)` reads; `list.set(i, value)` replaces; `list.add(value)` grows the list.\n- Removing an item shifts later items left, so indexes can change during traversal.\n\n### Practice\nWrite one sentence explaining why a classroom roster is a better fit for `ArrayList<String>` than `String[]` when students may join or leave."
+    },
+    {
+      "id": "B-ARRAYLIST-BOXING",
+      "title": "Bridge: Wrappers, Autoboxing, and ArrayList",
+      "unit": "Bridge",
+      "type": "bridge",
+      "source": "Guided learning path",
+      "body": "### Why This Bridge Exists\n`ArrayList` stores objects, not primitive values. That is why `ArrayList<int>` is not valid Java. To store numbers in an `ArrayList`, Java uses wrapper classes such as `Integer` and `Double`.\n\n### Learn\nUse wrapper types in the type parameter:\n\n```java\nArrayList<Integer> scores = new ArrayList<Integer>();\nscores.add(95);        // autoboxing: int becomes Integer\nint first = scores.get(0); // unboxing: Integer becomes int\n```\n\nAutoboxing is Java's automatic conversion from primitive to wrapper. Unboxing is the reverse.\n\n| Primitive | Wrapper | Example use in ArrayList |\n| --- | --- | --- |\n| `int` | `Integer` | `ArrayList<Integer>` |\n| `double` | `Double` | `ArrayList<Double>` |\n| `boolean` | `Boolean` | `ArrayList<Boolean>` |\n\n### Predict\nWhat is the value of `total`?\n\n```java\nArrayList<Integer> scores = new ArrayList<Integer>();\nscores.add(10);\nscores.add(20);\nint total = scores.get(0) + scores.get(1);\n```\n\n### Misconception Check\n- `ArrayList<int>` is invalid because type parameters require reference types.\n- `Integer` objects can often be used in arithmetic because Java unboxes them.\n- Unboxing a `null` wrapper causes an error, because there is no primitive value inside.\n\n### Practice\nDeclare an `ArrayList` that can store decimal quiz averages. Then add `87.5` to it.\n\nPossible answer: `ArrayList<Double> averages = new ArrayList<Double>(); averages.add(87.5);`"
+    },
+    {
+      "id": "B-ARRAY-TO-2D",
+      "title": "Bridge: From One Row to a Grid",
+      "unit": "Bridge",
+      "type": "bridge",
+      "source": "Guided learning path",
+      "body": "### Why This Bridge Exists\nA regular array models one sequence. A 2D array models rows and columns. This is useful for seats, images, game boards, spreadsheets, and tables of test data.\n\n### Learn\nThink of `grid[row][col]` as two choices: choose a row, then choose an item inside that row.\n\n```java\nint[][] grid = {\n  {4, 7, 1},\n  {9, 2, 6}\n};\n\nSystem.out.println(grid[0][1]); // 7\nSystem.out.println(grid.length); // number of rows: 2\nSystem.out.println(grid[0].length); // columns in row 0: 3\n```\n\n### Predict\nWhich value is printed by `grid[1][2]` in the example above?\n\n### Misconception Check\n- The first index is the row, not the column.\n- `grid.length` is the number of rows.\n- `grid[r].length` is the number of columns in row `r`.\n\n### Practice\nWrite nested loop headers that visit every cell in row-major order.\n\nPossible answer: `for (int r = 0; r < grid.length; r++)` and inside it `for (int c = 0; c < grid[r].length; c++)`."
+    },
+    {
+      "id": "B-ITERATION-RECURSION",
+      "title": "Bridge: From Loops to Recursion",
+      "unit": "Bridge",
+      "type": "bridge",
+      "source": "Guided learning path",
+      "body": "### Why This Bridge Exists\nLoops repeat by moving a variable toward a stopping condition. Recursion repeats by calling the same method on a smaller version of the problem.\n\n### Learn\nEvery AP CSA recursive method needs two ideas: a base case and a recursive call.\n\n```java\npublic static int sumTo(int n) {\n  if (n == 1) {\n    return 1;\n  }\n  return n + sumTo(n - 1);\n}\n```\n\nThe base case stops the chain. The recursive call makes progress toward the base case.\n\n### Predict\nTrace `sumTo(4)`. Write the pending additions before calculating the final answer.\n\n### Misconception Check\n- A recursive method is not magic; it creates a chain of method calls.\n- Forgetting the base case usually causes infinite recursion.\n- A recursive call must move toward the base case.\n\n### Practice\nFor a method that counts down from `n` to 1, identify the base case and the smaller recursive call.\n\nPossible answer: base case `n == 1`; smaller call uses `n - 1`."
+    },
+    {
+      "id": "B-FRQ-READING",
+      "title": "Bridge: Reading FRQs Like Specifications",
+      "unit": "Bridge",
+      "type": "bridge",
+      "source": "Guided learning path",
+      "body": "### Why This Bridge Exists\nStudents often lose FRQ points because they start coding before extracting the contract. FRQs are not just coding prompts; they are specifications with required behavior, restrictions, and examples.\n\n### Learn\nBefore writing code, mark four things:\n\n1. Inputs: parameters, instance variables, and any helper methods already provided.\n2. Output: return value or mutation that must happen.\n3. Rules: restrictions such as not modifying a list, using a helper method, or preserving order.\n4. Examples: sample cases that reveal edge behavior.\n\nA strong FRQ solution usually starts as a short algorithm in English.\n\n```java\n// Goal: count values above threshold\n// Plan: traverse every item, test it, update count, return count\n```\n\n### Predict\nIf a prompt says a method should return a value, should you print the answer? Explain.\n\n### Misconception Check\n- Do not add input prompts or extra print statements unless the FRQ asks for them.\n- Do not rewrite provided classes or helper methods.\n- Keep variable names simple and traceable; clarity helps avoid small logic mistakes.\n\n### Practice\nFor any FRQ part, write a three-line plan: data to inspect, condition to test, value to return or update."
+    }
+  ],
+  "learningPaths": [
+    {
+      "id": "path-foundations",
+      "navTitle": "1. Foundations",
+      "title": "1. Foundations: Values, Expressions, and Decisions",
+      "description": "Start with variables, expressions, output, input, and the Boolean decisions that make programs respond to data.",
+      "stepIds": [
+        "1.1",
+        "1.2",
+        "1.3",
+        "1.4",
+        "1.5",
+        "1.6",
+        "2.2",
+        "2.3",
+        "2.4"
+      ]
+    },
+    {
+      "id": "path-methods-objects",
+      "navTitle": "2. Methods & Objects",
+      "title": "2. Methods, Libraries, and Objects",
+      "description": "Move from using Java APIs to understanding reference variables and object method calls.",
+      "stepIds": [
+        "1.7",
+        "1.8",
+        "1.9",
+        "1.10",
+        "1.11",
+        "B-OBJECT-MODEL",
+        "1.12",
+        "1.13",
+        "1.14",
+        "1.15"
+      ]
+    },
+    {
+      "id": "path-control-algorithms",
+      "navTitle": "3. Control Flow",
+      "title": "3. Control Flow as Algorithms",
+      "description": "Build reliable selection, loop, string, nested-loop, and run-time reasoning habits.",
+      "stepIds": [
+        "2.1",
+        "2.5",
+        "2.6",
+        "2.7",
+        "2.8",
+        "2.9",
+        "2.10",
+        "2.11",
+        "2.12"
+      ]
+    },
+    {
+      "id": "path-class-design",
+      "navTitle": "4. Classes",
+      "title": "4. Designing Classes",
+      "description": "Shift from using objects to writing classes with constructors, methods, scope, and reference behavior.",
+      "stepIds": [
+        "B-CLASS-DESIGN-STORY",
+        "3.1",
+        "3.3",
+        "3.4",
+        "3.5",
+        "3.8",
+        "3.9",
+        "3.6",
+        "3.7",
+        "3.2"
+      ]
+    },
+    {
+      "id": "path-array-data",
+      "navTitle": "5. Arrays",
+      "title": "5. Arrays and Data Sets",
+      "description": "Learn fixed-size collections, traversals, text-file data, and the common algorithms that appear in MCQ and FRQ tasks.",
+      "stepIds": [
+        "4.1",
+        "4.2",
+        "4.3",
+        "4.4",
+        "4.5",
+        "4.6"
+      ]
+    },
+    {
+      "id": "path-arraylist-data",
+      "navTitle": "6. ArrayList",
+      "title": "6. ArrayList and Growing Data",
+      "description": "Understand why ArrayList exists, why wrappers matter, and how insertion/removal changes traversal strategy.",
+      "stepIds": [
+        "B-ARRAYLIST-NEED",
+        "4.7",
+        "B-ARRAYLIST-BOXING",
+        "4.8",
+        "4.9",
+        "4.10"
+      ]
+    },
+    {
+      "id": "path-2d-grid",
+      "navTitle": "7. 2D Arrays",
+      "title": "7. 2D Arrays and Grid Algorithms",
+      "description": "Extend one-dimensional traversal into row-column reasoning for tables, boards, and matrix-style FRQs.",
+      "stepIds": [
+        "B-ARRAY-TO-2D",
+        "4.11",
+        "4.12",
+        "4.13"
+      ]
+    },
+    {
+      "id": "path-search-sort-recursion",
+      "navTitle": "8. Search & Recursion",
+      "title": "8. Search, Sort, and Recursion",
+      "description": "Connect traversal algorithms to binary search, sorting, recursive thinking, and recursive search/sort.",
+      "stepIds": [
+        "4.14",
+        "4.15",
+        "B-ITERATION-RECURSION",
+        "4.16",
+        "4.17"
+      ]
+    },
+    {
+      "id": "path-frq-integration",
+      "navTitle": "9. FRQ Integration",
+      "title": "9. FRQ Integration",
+      "description": "Practice reading specifications and choosing the right tools for method, class, ArrayList, and 2D-array FRQs.",
+      "stepIds": [
+        "B-FRQ-READING",
+        "2.9",
+        "3.5",
+        "3.6",
+        "4.5",
+        "4.10",
+        "4.13",
+        "4.16"
+      ]
+    }
+  ],
+  "reviewSets": [
+    {
+      "id": "review-reference-types",
+      "navTitle": "Reference Types",
+      "title": "Reference Types and Aliasing",
+      "description": "Review the concepts that make objects, arrays, wrappers, and ArrayLists behave differently from primitive variables.",
+      "stepIds": [
+        "B-OBJECT-MODEL",
+        "1.12",
+        "1.13",
+        "1.14",
+        "3.6",
+        "4.7",
+        "B-ARRAYLIST-BOXING",
+        "4.8"
+      ]
+    },
+    {
+      "id": "review-indexing-bounds",
+      "navTitle": "Indexing & Bounds",
+      "title": "Indexing and Bounds",
+      "description": "Strengthen zero-based indexing across String, arrays, ArrayList, and 2D arrays.",
+      "stepIds": [
+        "1.15",
+        "4.3",
+        "4.4",
+        "4.8",
+        "4.9",
+        "B-ARRAY-TO-2D",
+        "4.11",
+        "4.12"
+      ]
+    },
+    {
+      "id": "review-traversal-algorithms",
+      "navTitle": "Traversal",
+      "title": "Traversal Algorithms",
+      "description": "Practice reading, counting, accumulating, filtering, and mutating across every AP-tested collection type.",
+      "stepIds": [
+        "2.7",
+        "2.8",
+        "2.10",
+        "2.11",
+        "4.4",
+        "4.5",
+        "4.9",
+        "4.10",
+        "4.12",
+        "4.13"
+      ]
+    },
+    {
+      "id": "review-frq-readiness",
+      "navTitle": "FRQ Readiness",
+      "title": "FRQ Readiness",
+      "description": "Focus on the writing skills most likely to determine free-response score quality.",
+      "stepIds": [
+        "B-FRQ-READING",
+        "1.9",
+        "2.9",
+        "3.4",
+        "3.5",
+        "3.8",
+        "4.5",
+        "4.10",
+        "4.13"
+      ]
+    }
+  ],
   "units": [
     {
       "unit": 1,

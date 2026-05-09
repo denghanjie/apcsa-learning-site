@@ -34,6 +34,8 @@
           <input id="searchInput" type="search" autocomplete="off" placeholder="Search topics">
         </label>
 
+        <div class="mode-tabs" id="modeTabs" aria-label="Tutorial mode"></div>
+
         <nav class="unit-nav" id="unitNav" aria-label="Units"></nav>
 
         <section class="progress-panel" aria-label="Progress">
@@ -71,6 +73,7 @@
           <div class="topic-rail-head">
             <p class="eyebrow" id="activeUnitLabel">Unit</p>
             <h2 id="activeUnitTitle">Topics</h2>
+            <p class="context-description" id="activeContextDescription"></p>
           </div>
           <div class="topic-list" id="topicList"></div>
         </section>
@@ -85,25 +88,21 @@
               <div class="lesson-actions">
                 <button class="ghost-btn" id="prevBtn" type="button">Previous</button>
                 <button class="ghost-btn" id="nextBtn" type="button">Next</button>
+                <button class="ghost-btn" id="notesToggleBtn" type="button" aria-expanded="false" aria-controls="notesDrawer">Notes</button>
                 <button class="primary-btn" id="completeBtn" type="button" aria-pressed="false">Mark Complete</button>
               </div>
             </header>
 
             <div class="section-tabs" id="sectionTabs" aria-label="Lesson sections"></div>
+            <section class="notes-drawer" id="notesDrawer" aria-label="Notes">
+              <div class="notes-head">
+                <h2>Notes</h2>
+                <button class="ghost-btn small-btn" id="notesCloseBtn" type="button">Close</button>
+              </div>
+              <textarea id="notesArea" rows="8" spellcheck="true" placeholder="Your notes for this topic"></textarea>
+            </section>
             <div class="lesson-content" id="lessonContent"></div>
           </article>
-
-          <aside class="study-panel" aria-label="Practice and notes">
-            <section class="tool-panel">
-              <h2>Practice</h2>
-              <div id="practicePanel"></div>
-            </section>
-
-            <section class="tool-panel">
-              <h2>Notes</h2>
-              <textarea id="notesArea" rows="10" spellcheck="true" placeholder="Your notes for this topic"></textarea>
-            </section>
-          </aside>
         </section>
       </main>
     </div>

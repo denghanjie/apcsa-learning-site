@@ -4,29 +4,42 @@ const LAST_TOPIC_KEY = "apcsa-tutorial-last-topic-v1";
 
 const data = window.APCSA_TUTORIAL_DATA;
 const allTopics = data.units.flatMap((unit) => unit.topics);
+const bridgeLessons = data.bridgeLessons || [];
+const allLessons = [...allTopics, ...bridgeLessons];
+const lessonById = new Map(allLessons.map((lesson) => [lesson.id, lesson]));
+const defaultPath = data.learningPaths && data.learningPaths[0];
+const defaultReview = data.reviewSets && data.reviewSets[0];
 
 const state = {
+  mode: defaultPath ? "learn" : "browse",
   unit: 1,
-  topicId: allTopics[0].id,
+  pathId: defaultPath ? defaultPath.id : "",
+  reviewId: defaultReview ? defaultReview.id : "",
+  topicId: defaultPath ? defaultPath.stepIds[0] : allTopics[0].id,
   query: "",
   section: "all",
+  notesOpen: false,
   completed: loadJson(STORAGE_KEY, {}),
   notes: loadJson(NOTES_KEY, {})
 };
 
 const elements = {
+  modeTabs: document.getElementById("modeTabs"),
   unitNav: document.getElementById("unitNav"),
   topicList: document.getElementById("topicList"),
   searchInput: document.getElementById("searchInput"),
   activeUnitLabel: document.getElementById("activeUnitLabel"),
   activeUnitTitle: document.getElementById("activeUnitTitle"),
+  activeContextDescription: document.getElementById("activeContextDescription"),
   completeCount: document.getElementById("completeCount"),
   remainingCount: document.getElementById("remainingCount"),
   lessonMeta: document.getElementById("lessonMeta"),
   lessonTitle: document.getElementById("lessonTitle"),
   lessonContent: document.getElementById("lessonContent"),
   sectionTabs: document.getElementById("sectionTabs"),
-  practicePanel: document.getElementById("practicePanel"),
+  notesToggleBtn: document.getElementById("notesToggleBtn"),
+  notesCloseBtn: document.getElementById("notesCloseBtn"),
+  notesDrawer: document.getElementById("notesDrawer"),
   notesArea: document.getElementById("notesArea"),
   prevBtn: document.getElementById("prevBtn"),
   nextBtn: document.getElementById("nextBtn"),
@@ -38,9 +51,9 @@ init();
 function init() {
   const lastTopic = localStorage.getItem(LAST_TOPIC_KEY);
 
-  if (lastTopic && allTopics.some((topic) => topic.id === lastTopic)) {
+  if (lastTopic && lessonById.has(lastTopic)) {
     state.topicId = lastTopic;
-    state.unit = getTopic(lastTopic).unit;
+    syncContextToTopic(lastTopic);
   }
 
   elements.searchInput.addEventListener("input", () => {
@@ -52,18 +65,128 @@ function init() {
   elements.nextBtn.addEventListener("click", () => moveTopic(1));
   elements.completeBtn.addEventListener("click", toggleComplete);
   elements.notesArea.addEventListener("input", saveNotes);
+  elements.notesToggleBtn.addEventListener("click", () => {
+    state.notesOpen = !state.notesOpen;
+    renderNotesDrawer();
+  });
+  elements.notesCloseBtn.addEventListener("click", () => {
+    state.notesOpen = false;
+    renderNotesDrawer();
+  });
 
   render();
 }
 
 function render() {
-  renderUnits();
+  renderModeTabs();
+  renderNavigation();
   renderTopicList();
   renderLesson();
   renderProgress();
 }
 
-function renderUnits() {
+function renderModeTabs() {
+  const modes = [
+    { id: "learn", label: "Learn", available: (data.learningPaths || []).length > 0 },
+    { id: "browse", label: "Units", available: data.units.length > 0 },
+    { id: "review", label: "Review", available: (data.reviewSets || []).length > 0 }
+  ].filter((mode) => mode.available);
+
+  elements.modeTabs.innerHTML = modes
+    .map((mode) => {
+      const active = mode.id === state.mode ? " active" : "";
+      return `<button class="mode-tab${active}" type="button" data-mode="${mode.id}">${mode.label}</button>`;
+    })
+    .join("");
+
+  elements.modeTabs.querySelectorAll("button").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.mode = button.dataset.mode;
+      const first = getActiveSequence()[0];
+      if (first) {
+        state.topicId = first.id;
+        syncUnitToTopic(first.id);
+      }
+      state.section = "all";
+      rememberTopic();
+      render();
+    });
+  });
+}
+
+function renderNavigation() {
+  if (state.mode === "learn") {
+    renderPathNavigation();
+    return;
+  }
+
+  if (state.mode === "review") {
+    renderReviewNavigation();
+    return;
+  }
+
+  renderUnitNavigation();
+}
+
+function renderPathNavigation() {
+  elements.unitNav.className = "unit-nav picker-nav";
+  elements.unitNav.setAttribute("aria-label", "Learning paths");
+  elements.unitNav.innerHTML = `
+    <label class="context-picker">
+      <span>Learning path</span>
+      <select id="pathPicker">
+        ${(data.learningPaths || []).map((path) => {
+          const selected = path.id === state.pathId ? " selected" : "";
+          return `<option value="${escapeHtml(path.id)}"${selected}>${escapeHtml(getNavTitle(path))}</option>`;
+        }).join("")}
+      </select>
+    </label>
+  `;
+
+  document.getElementById("pathPicker").addEventListener("change", (event) => {
+    state.pathId = event.target.value;
+    const first = getActiveSequence()[0];
+    if (first) {
+      state.topicId = first.id;
+      syncUnitToTopic(first.id);
+    }
+    state.section = "all";
+    rememberTopic();
+    render();
+  });
+}
+
+function renderReviewNavigation() {
+  elements.unitNav.className = "unit-nav picker-nav";
+  elements.unitNav.setAttribute("aria-label", "Review sets");
+  elements.unitNav.innerHTML = `
+    <label class="context-picker">
+      <span>Review focus</span>
+      <select id="reviewPicker">
+        ${(data.reviewSets || []).map((review) => {
+          const selected = review.id === state.reviewId ? " selected" : "";
+          return `<option value="${escapeHtml(review.id)}"${selected}>${escapeHtml(getNavTitle(review))}</option>`;
+        }).join("")}
+      </select>
+    </label>
+  `;
+
+  document.getElementById("reviewPicker").addEventListener("change", (event) => {
+    state.reviewId = event.target.value;
+    const first = getActiveSequence()[0];
+    if (first) {
+      state.topicId = first.id;
+      syncUnitToTopic(first.id);
+    }
+    state.section = "all";
+    rememberTopic();
+    render();
+  });
+}
+
+function renderUnitNavigation() {
+  elements.unitNav.className = "unit-nav";
+  elements.unitNav.setAttribute("aria-label", "Units");
   elements.unitNav.innerHTML = data.units
     .map((unit) => {
       const completed = unit.topics.filter((topic) => state.completed[topic.id]).length;
@@ -92,10 +215,11 @@ function renderUnits() {
 }
 
 function renderTopicList() {
-  const unit = getUnit(state.unit);
-  const topics = filterTopics(unit.topics);
-  elements.activeUnitLabel.textContent = `Unit ${unit.unit}`;
-  elements.activeUnitTitle.textContent = unit.title.replace(/^Unit \d+: /, "");
+  const context = getActiveContext();
+  const topics = filterTopics(context.lessons);
+  elements.activeUnitLabel.textContent = context.label;
+  elements.activeUnitTitle.textContent = context.title;
+  elements.activeContextDescription.textContent = context.description || "";
 
   if (topics.length === 0) {
     elements.topicList.innerHTML = `<p class="no-results">No matching topics</p>`;
@@ -107,11 +231,12 @@ function renderTopicList() {
       const active = topic.id === state.topicId ? " active" : "";
       const done = state.completed[topic.id] ? " done" : "";
       const status = state.completed[topic.id] ? "Done" : "Open";
+      const marker = topic.type === "bridge" ? "Bridge" : topic.id;
 
       return `
         <button class="topic-btn${active}" type="button" data-topic-id="${topic.id}">
           <span class="topic-title">
-            <strong>${escapeHtml(topic.id)}</strong>
+            <strong>${escapeHtml(marker)}</strong>
             <span>${escapeHtml(topic.title)}</span>
           </span>
           <span class="topic-status${done}">${status}</span>
@@ -124,7 +249,7 @@ function renderTopicList() {
     button.addEventListener("click", () => {
       const topic = getTopic(button.dataset.topicId);
       state.topicId = topic.id;
-      state.unit = topic.unit;
+      syncUnitToTopic(topic.id);
       state.section = "all";
       rememberTopic();
       render();
@@ -133,17 +258,27 @@ function renderTopicList() {
 }
 
 function renderLesson() {
-  const topic = getTopic(state.topicId);
+  let topic = getTopic(state.topicId);
+
+  if (!topic) {
+    topic = getActiveSequence()[0];
+    state.topicId = topic.id;
+  }
+
   const sections = getSections(topic);
   const selectedSections = state.section === "all"
     ? sections
     : sections.filter((section) => section.id === state.section);
-  const topicIndex = allTopics.findIndex((item) => item.id === topic.id);
+  const sequence = getActiveSequence();
+  const topicIndex = sequence.findIndex((item) => item.id === topic.id);
+  const meta = topic.type === "bridge"
+    ? `${getActiveContext().label} | Bridge`
+    : `Unit ${topic.unit} | Topic ${topic.id}`;
 
-  elements.lessonMeta.textContent = `Unit ${topic.unit} | Topic ${topic.id}`;
+  elements.lessonMeta.textContent = meta;
   elements.lessonTitle.textContent = topic.title;
-  elements.prevBtn.disabled = topicIndex === 0;
-  elements.nextBtn.disabled = topicIndex === allTopics.length - 1;
+  elements.prevBtn.disabled = topicIndex <= 0;
+  elements.nextBtn.disabled = topicIndex === -1 || topicIndex === sequence.length - 1;
   elements.completeBtn.textContent = state.completed[topic.id] ? "Completed" : "Mark Complete";
   elements.completeBtn.classList.toggle("is-complete", Boolean(state.completed[topic.id]));
   elements.completeBtn.setAttribute("aria-pressed", state.completed[topic.id] ? "true" : "false");
@@ -154,7 +289,7 @@ function renderLesson() {
     .map((section) => renderSection(section))
     .join("");
 
-  renderPractice(sections);
+  renderNotesDrawer();
 }
 
 function renderSectionTabs(sections) {
@@ -187,56 +322,30 @@ function renderSection(section) {
   return `${heading}${markdownToHtml(section.content)}`;
 }
 
-function renderPractice(sections) {
-  const practiceSections = sections.filter((section) => {
-    const title = section.title.toLowerCase();
-    return title.includes("practice") || title.includes("checkpoint");
-  });
-
-  if (practiceSections.length === 0) {
-    elements.practicePanel.innerHTML = `<p class="empty-state">No separate practice section in this topic.</p>`;
-    return;
-  }
-
-  elements.practicePanel.innerHTML = practiceSections
-    .map((section) => {
-      const split = splitAnswer(section.content);
-      const answer = split.answer
-        ? `
-          <details class="answer-toggle">
-            <summary>Show worked answer</summary>
-            <div class="answer-body">${markdownToHtml(split.answer)}</div>
-          </details>
-        `
-        : "";
-
-      return `
-        <section class="practice-item">
-          <h3>${escapeHtml(section.title)}</h3>
-          <div class="practice-body">${markdownToHtml(split.prompt)}</div>
-          ${answer}
-        </section>
-      `;
-    })
-    .join("");
+function renderNotesDrawer() {
+  elements.notesDrawer.classList.toggle("active", state.notesOpen);
+  elements.notesToggleBtn.classList.toggle("active", state.notesOpen);
+  elements.notesToggleBtn.setAttribute("aria-expanded", state.notesOpen ? "true" : "false");
 }
 
 function renderProgress() {
-  const completed = allTopics.filter((topic) => state.completed[topic.id]).length;
+  const sequence = getActiveSequence();
+  const completed = sequence.filter((topic) => state.completed[topic.id]).length;
   elements.completeCount.textContent = completed;
-  elements.remainingCount.textContent = allTopics.length - completed;
+  elements.remainingCount.textContent = sequence.length - completed;
 }
 
 function moveTopic(direction) {
-  const index = allTopics.findIndex((topic) => topic.id === state.topicId);
-  const next = allTopics[index + direction];
+  const sequence = getActiveSequence();
+  const index = sequence.findIndex((topic) => topic.id === state.topicId);
+  const next = sequence[index + direction];
 
   if (!next) {
     return;
   }
 
   state.topicId = next.id;
-  state.unit = next.unit;
+  syncUnitToTopic(next.id);
   state.section = "all";
   rememberTopic();
   render();
@@ -280,12 +389,87 @@ function filterTopics(topics) {
   });
 }
 
+function getActiveContext() {
+  if (state.mode === "learn") {
+    const path = (data.learningPaths || []).find((item) => item.id === state.pathId) || data.learningPaths[0];
+    return {
+      label: "Learning Path",
+      title: path.title,
+      description: path.description,
+      lessons: resolveSteps(path.stepIds)
+    };
+  }
+
+  if (state.mode === "review") {
+    const review = (data.reviewSets || []).find((item) => item.id === state.reviewId) || data.reviewSets[0];
+    return {
+      label: "Review Set",
+      title: review.title,
+      description: review.description,
+      lessons: resolveSteps(review.stepIds)
+    };
+  }
+
+  const unit = getUnit(state.unit);
+  return {
+    label: `Unit ${unit.unit}`,
+    title: unit.title.replace(/^Unit \d+: /, ""),
+    description: "Browse the original AP unit organization.",
+    lessons: unit.topics
+  };
+}
+
+function getActiveSequence() {
+  return getActiveContext().lessons;
+}
+
+function resolveSteps(stepIds) {
+  return stepIds
+    .map((id) => getTopic(id))
+    .filter(Boolean);
+}
+
+function getNavTitle(item) {
+  return item.navTitle || item.title;
+}
+
+function syncContextToTopic(topicId) {
+  const path = (data.learningPaths || []).find((item) => item.stepIds.includes(topicId));
+
+  if (path) {
+    state.mode = "learn";
+    state.pathId = path.id;
+    syncUnitToTopic(topicId);
+    return;
+  }
+
+  const review = (data.reviewSets || []).find((item) => item.stepIds.includes(topicId));
+
+  if (review) {
+    state.mode = "review";
+    state.reviewId = review.id;
+    syncUnitToTopic(topicId);
+    return;
+  }
+
+  state.mode = "browse";
+  syncUnitToTopic(topicId);
+}
+
+function syncUnitToTopic(topicId) {
+  const topic = getTopic(topicId);
+
+  if (topic && typeof topic.unit === "number") {
+    state.unit = topic.unit;
+  }
+}
+
 function getUnit(unitNumber) {
   return data.units.find((unit) => unit.unit === unitNumber);
 }
 
 function getTopic(topicId) {
-  return allTopics.find((topic) => topic.id === topicId);
+  return lessonById.get(topicId);
 }
 
 function rememberTopic() {
