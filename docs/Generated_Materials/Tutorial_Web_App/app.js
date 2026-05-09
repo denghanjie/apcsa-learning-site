@@ -90,10 +90,10 @@ function render() {
 
 function renderModeTabs() {
   const modes = [
-    { id: "learn", label: "Learn", available: (data.learningPaths || []).length > 0 },
-    { id: "browse", label: "Units", available: data.units.length > 0 },
-    { id: "review", label: "Review", available: (data.reviewSets || []).length > 0 },
-    { id: "labs", label: "Labs", available: (data.examLabs || []).length > 0 }
+    { id: "learn", label: "Learn Path", available: (data.learningPaths || []).length > 0 },
+    { id: "browse", label: "Topic Review", available: data.units.length > 0 },
+    { id: "review", label: "Skill Focus", available: (data.reviewSets || []).length > 0 },
+    { id: "labs", label: "Exam Patterns", available: (data.examLabs || []).length > 0 }
   ].filter((mode) => mode.available);
 
   elements.modeTabs.innerHTML = modes
@@ -142,7 +142,7 @@ function renderPathNavigation() {
   elements.unitNav.setAttribute("aria-label", "Learning paths");
   elements.unitNav.innerHTML = `
     <label class="context-picker">
-      <span>Learning path</span>
+      <span>Learn path</span>
       <select id="pathPicker">
         ${(data.learningPaths || []).map((path) => {
           const selected = path.id === state.pathId ? " selected" : "";
@@ -170,7 +170,7 @@ function renderReviewNavigation() {
   elements.unitNav.setAttribute("aria-label", "Review sets");
   elements.unitNav.innerHTML = `
     <label class="context-picker">
-      <span>Review focus</span>
+      <span>Skill focus</span>
       <select id="reviewPicker">
         ${(data.reviewSets || []).map((review) => {
           const selected = review.id === state.reviewId ? " selected" : "";
@@ -198,7 +198,7 @@ function renderLabNavigation() {
   elements.unitNav.setAttribute("aria-label", "Exam pattern labs");
   elements.unitNav.innerHTML = `
     <label class="context-picker">
-      <span>Exam labs</span>
+      <span>Exam patterns</span>
       <select id="labPicker">
         ${(data.examLabs || []).map((lab) => {
           const selected = lab.id === state.labId ? " selected" : "";
@@ -430,7 +430,7 @@ function getActiveContext() {
   if (state.mode === "learn") {
     const path = (data.learningPaths || []).find((item) => item.id === state.pathId) || data.learningPaths[0];
     return {
-      label: "Learning Path",
+      label: "Learn Path",
       title: path.title,
       description: path.description,
       lessons: resolveSteps(path.stepIds)
@@ -440,7 +440,7 @@ function getActiveContext() {
   if (state.mode === "review") {
     const review = (data.reviewSets || []).find((item) => item.id === state.reviewId) || data.reviewSets[0];
     return {
-      label: "Review Set",
+      label: "Skill Focus",
       title: review.title,
       description: review.description,
       lessons: resolveSteps(review.stepIds)
@@ -450,7 +450,7 @@ function getActiveContext() {
   if (state.mode === "labs") {
     const lab = (data.examLabs || []).find((item) => item.id === state.labId) || data.examLabs[0];
     return {
-      label: "Exam Labs",
+      label: "Exam Patterns",
       title: lab.title,
       description: lab.description,
       lessons: resolveSteps(lab.stepIds)
@@ -459,9 +459,9 @@ function getActiveContext() {
 
   const unit = getUnit(state.unit);
   return {
-    label: `Unit ${unit.unit}`,
+    label: "Topic Review",
     title: unit.title.replace(/^Unit \d+: /, ""),
-    description: "Browse the original AP unit organization.",
+    description: "Review all AP units as a complete map of the core knowledge points.",
     lessons: unit.topics
   };
 }
