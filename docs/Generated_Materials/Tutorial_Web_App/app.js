@@ -5,16 +5,19 @@ const LAST_TOPIC_KEY = "apcsa-tutorial-last-topic-v1";
 const data = window.APCSA_TUTORIAL_DATA;
 const allTopics = data.units.flatMap((unit) => unit.topics);
 const bridgeLessons = data.bridgeLessons || [];
-const allLessons = [...allTopics, ...bridgeLessons];
+const examLabLessons = data.examLabLessons || [];
+const allLessons = [...allTopics, ...bridgeLessons, ...examLabLessons];
 const lessonById = new Map(allLessons.map((lesson) => [lesson.id, lesson]));
 const defaultPath = data.learningPaths && data.learningPaths[0];
 const defaultReview = data.reviewSets && data.reviewSets[0];
+const defaultLab = data.examLabs && data.examLabs[0];
 
 const state = {
   mode: defaultPath ? "learn" : "browse",
   unit: 1,
   pathId: defaultPath ? defaultPath.id : "",
   reviewId: defaultReview ? defaultReview.id : "",
+  labId: defaultLab ? defaultLab.id : "",
   topicId: defaultPath ? defaultPath.stepIds[0] : allTopics[0].id,
   query: "",
   section: "all",
@@ -89,7 +92,8 @@ function renderModeTabs() {
   const modes = [
     { id: "learn", label: "Learn", available: (data.learningPaths || []).length > 0 },
     { id: "browse", label: "Units", available: data.units.length > 0 },
-    { id: "review", label: "Review", available: (data.reviewSets || []).length > 0 }
+    { id: "review", label: "Review", available: (data.reviewSets || []).length > 0 },
+    { id: "labs", label: "Labs", available: (data.examLabs || []).length > 0 }
   ].filter((mode) => mode.available);
 
   elements.modeTabs.innerHTML = modes
@@ -122,6 +126,11 @@ function renderNavigation() {
 
   if (state.mode === "review") {
     renderReviewNavigation();
+    return;
+  }
+
+  if (state.mode === "labs") {
+    renderLabNavigation();
     return;
   }
 
@@ -184,6 +193,34 @@ function renderReviewNavigation() {
   });
 }
 
+function renderLabNavigation() {
+  elements.unitNav.className = "unit-nav picker-nav";
+  elements.unitNav.setAttribute("aria-label", "Exam pattern labs");
+  elements.unitNav.innerHTML = `
+    <label class="context-picker">
+      <span>Exam labs</span>
+      <select id="labPicker">
+        ${(data.examLabs || []).map((lab) => {
+          const selected = lab.id === state.labId ? " selected" : "";
+          return `<option value="${escapeHtml(lab.id)}"${selected}>${escapeHtml(getNavTitle(lab))}</option>`;
+        }).join("")}
+      </select>
+    </label>
+  `;
+
+  document.getElementById("labPicker").addEventListener("change", (event) => {
+    state.labId = event.target.value;
+    const first = getActiveSequence()[0];
+    if (first) {
+      state.topicId = first.id;
+      syncUnitToTopic(first.id);
+    }
+    state.section = "all";
+    rememberTopic();
+    render();
+  });
+}
+
 function renderUnitNavigation() {
   elements.unitNav.className = "unit-nav";
   elements.unitNav.setAttribute("aria-label", "Units");
@@ -231,7 +268,7 @@ function renderTopicList() {
       const active = topic.id === state.topicId ? " active" : "";
       const done = state.completed[topic.id] ? " done" : "";
       const status = state.completed[topic.id] ? "Done" : "Open";
-      const marker = topic.type === "bridge" ? "Bridge" : topic.id;
+      const marker = topic.type === "bridge" ? "Bridge" : topic.type === "lab" ? "Lab" : topic.id;
 
       return `
         <button class="topic-btn${active}" type="button" data-topic-id="${topic.id}">
@@ -271,8 +308,8 @@ function renderLesson() {
     : sections.filter((section) => section.id === state.section);
   const sequence = getActiveSequence();
   const topicIndex = sequence.findIndex((item) => item.id === topic.id);
-  const meta = topic.type === "bridge"
-    ? `${getActiveContext().label} | Bridge`
+  const meta = topic.type === "bridge" || topic.type === "lab"
+    ? `${getActiveContext().label} | ${topic.type === "lab" ? "Exam Pattern" : "Bridge"}`
     : `Unit ${topic.unit} | Topic ${topic.id}`;
 
   elements.lessonMeta.textContent = meta;
@@ -410,6 +447,16 @@ function getActiveContext() {
     };
   }
 
+  if (state.mode === "labs") {
+    const lab = (data.examLabs || []).find((item) => item.id === state.labId) || data.examLabs[0];
+    return {
+      label: "Exam Labs",
+      title: lab.title,
+      description: lab.description,
+      lessons: resolveSteps(lab.stepIds)
+    };
+  }
+
   const unit = getUnit(state.unit);
   return {
     label: `Unit ${unit.unit}`,
@@ -448,6 +495,15 @@ function syncContextToTopic(topicId) {
   if (review) {
     state.mode = "review";
     state.reviewId = review.id;
+    syncUnitToTopic(topicId);
+    return;
+  }
+
+  const lab = (data.examLabs || []).find((item) => item.stepIds.includes(topicId));
+
+  if (lab) {
+    state.mode = "labs";
+    state.labId = lab.id;
     syncUnitToTopic(topicId);
     return;
   }
@@ -570,6 +626,14 @@ function markdownToHtml(markdown) {
     if (line.trim() === "") {
       flushParagraph();
       closeList();
+      continue;
+    }
+
+    const rawLine = line.trim();
+    if (rawLine.startsWith("<details class=\"answer-toggle\"") || rawLine === "</div></details>") {
+      flushParagraph();
+      closeList();
+      html.push(rawLine);
       continue;
     }
 

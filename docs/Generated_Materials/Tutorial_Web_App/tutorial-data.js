@@ -67,6 +67,72 @@ window.APCSA_TUTORIAL_DATA = {
       "body": "### Why This Bridge Exists\nStudents often lose FRQ points because they start coding before extracting the contract. FRQs are not just coding prompts; they are specifications with required behavior, restrictions, and examples.\n\n### Learn\nBefore writing code, mark four things:\n\n1. Inputs: parameters, instance variables, and any helper methods already provided.\n2. Output: return value or mutation that must happen.\n3. Rules: restrictions such as not modifying a list, using a helper method, or preserving order.\n4. Examples: sample cases that reveal edge behavior.\n\nA strong FRQ solution usually starts as a short algorithm in English.\n\n```java\n// Goal: count values above threshold\n// Plan: traverse every item, test it, update count, return count\n```\n\n### Predict\nIf a prompt says a method should return a value, should you print the answer? Explain.\n\n### Misconception Check\n- Do not add input prompts or extra print statements unless the FRQ asks for them.\n- Do not rewrite provided classes or helper methods.\n- Keep variable names simple and traceable; clarity helps avoid small logic mistakes.\n\n### Practice\nFor any FRQ part, write a three-line plan: data to inspect, condition to test, value to return or update."
     }
   ],
+  "examLabLessons": [
+    {
+      "id": "L-MODULO-PATTERNS",
+      "title": "Modulo Patterns: Remainders as Information",
+      "unit": "Exam Lab",
+      "type": "lab",
+      "source": "Current AP-style exam pattern lab",
+      "body": "### Why This Lab Matters\nThe remainder operator is rarely tested as a bare arithmetic fact. It usually appears inside a decision, a loop, or a collection algorithm.\n\n### Core Pattern\nUse `%` when the question is about divisibility, parity, cycles, or digits.\n\n```java\nn % 2 == 0      // even\nn % 2 != 0      // odd\nn % k == 0      // divisible by k\nn % 10          // ones digit\n(n / 10) % 10   // tens digit\n```\n\n### Exam Pattern 1: Odd or Even Size\nWhen an algorithm behaves differently for an odd number of items, test the size before choosing bounds.\n\n```java\nif (list.size() % 2 == 1) {\n  // odd case\n} else {\n  // even case\n}\n```\n\n### Exam Pattern 2: Repeating Cycles\nA cycle repeats when the remainder repeats. This appears in row patterns, alternating turns, and every-nth-item logic.\n\n```java\nif (index % 3 == 0) {\n  // index is 0, 3, 6, 9, ...\n}\n```\n\n### Common Traps\n- `a % b == 0` means `a` is divisible by `b`, not the other way around.\n- `n % 2 == 1` works for positive odd integers; `n % 2 != 0` is safer if negative values are possible.\n- `%` has the same precedence level as `*` and `/`, before `+` and `-`.\n\n### Practice\nWrite conditions for these cases:\n\n1. `num` is a multiple of 5.\n2. `num` has ones digit 7.\n3. `items` has an odd number of elements.\n4. `row` should be treated as a special row every fourth row.\n\n<details class=\"answer-toggle\"><summary>Show worked answer</summary><div class=\"answer-body\">\n\n```java\nnum % 5 == 0\nnum % 10 == 7\nitems.size() % 2 == 1\nrow % 4 == 0\n```\n\n</div></details>"
+    },
+    {
+      "id": "L-STRING-SURGERY",
+      "title": "String Surgery with indexOf and substring",
+      "unit": "Exam Lab",
+      "type": "lab",
+      "source": "Current AP-style exam pattern lab",
+      "body": "### Why This Lab Matters\nRecent AP-style string tasks often ask whether a piece of text is absent, at the beginning, at the end, or somewhere in the middle. The code is small, but the index arithmetic is easy to damage.\n\n### Core Pattern\n`indexOf` answers location. `substring` builds the new string.\n\n```java\nint pos = text.indexOf(target);\nif (pos == -1) {\n  // target is absent\n}\n```\n\n### Contains, Prefix, and Suffix\nUse the comparison that matches the exact location in the specification.\n\n```java\ntext.indexOf(target) != -1          // appears anywhere\ntext.indexOf(target) == 0           // starts with target\ntext.substring(text.length() - target.length()).equals(target)  // ends with target\n```\n\nGuard the suffix check when `text` might be shorter than `target`.\n\n```java\nif (text.length() >= target.length()) {\n  String end = text.substring(text.length() - target.length());\n  if (end.equals(target)) {\n    // suffix match\n  }\n}\n```\n\n### Cut and Replace\nTo remove the first occurrence, keep the part before it and the part after it.\n\n```java\nint pos = text.indexOf(target);\nif (pos != -1) {\n  text = text.substring(0, pos) + text.substring(pos + target.length());\n}\n```\n\nTo replace it, put the new text in the middle.\n\n```java\ntext = text.substring(0, pos) + replacement + text.substring(pos + target.length());\n```\n\n### Common Traps\n- `indexOf(target) > 0` misses a prefix match at index 0.\n- `substring(start, end)` includes `start` but excludes `end`.\n- `substring(target.length())` removes a prefix only after you have confirmed the prefix exists.\n- Use `.equals`, not `==`, when comparing string contents.\n\n### Practice\nWrite code that returns `word` with the prefix `pre` removed if `word` starts with `pre`; otherwise return `word` unchanged.\n\n<details class=\"answer-toggle\"><summary>Show worked answer</summary><div class=\"answer-body\">\n\n```java\nif (word.indexOf(pre) == 0) {\n  return word.substring(pre.length());\n}\nreturn word;\n```\n\n</div></details>"
+    },
+    {
+      "id": "L-METHOD-SIDE-EFFECTS",
+      "title": "Method Calls, Return Values, and Side Effects",
+      "unit": "Exam Lab",
+      "type": "lab",
+      "source": "Current AP-style exam pattern lab",
+      "body": "### Why This Lab Matters\nCurrent FRQs often give you helper methods. Students lose points when they call the helper on the wrong object, omit required parameters, treat a void method like it returns a value, or call a state-changing method more than once.\n\n### Core Pattern\nRead a helper method by asking three questions:\n\n1. What object receives the call?\n2. What parameters are required?\n3. Does it return a value, or does it mutate state?\n\n### Same Object vs Another Object\nA method in the same class can usually be called directly.\n\n```java\nint walked = walkDogs(hour);\n```\n\nA method belonging to an instance variable must be called through that reference.\n\n```java\nint available = company.numAvailableDogs(hour);\ncompany.updateDogs(hour, walked);\n```\n\n### Void Method Pattern\nA void method performs an action. Do not return it or store it.\n\n```java\ncompany.updateDogs(hour, walked);\nreturn walked;\n```\n\n### Side Effect Pattern\nIf a helper changes state, save any needed old value before the change.\n\n```java\nint available = company.numAvailableDogs(hour);\nint walked = Math.min(available, maxDogs);\ncompany.updateDogs(hour, walked);\nreturn walked;\n```\n\n### Common Traps\n- Calling an instance method on the class name.\n- Calling a method with no parameter when the header requires one.\n- Printing when the specification asks you to return.\n- Calling a mutating method twice inside one calculation.\n\n### Practice\nA class has an instance variable `tracker`. The method `tracker.getCount(day)` returns an int. The method `tracker.record(day, amount)` is void and changes the tracker. Write two lines that save the count for day 3, then record 5.\n\n<details class=\"answer-toggle\"><summary>Show worked answer</summary><div class=\"answer-body\">\n\n```java\nint count = tracker.getCount(3);\ntracker.record(3, 5);\n```\n\n</div></details>"
+    },
+    {
+      "id": "L-CLASS-FRQ-CHECKLIST",
+      "title": "Class Design FRQ Checklist",
+      "unit": "Exam Lab",
+      "type": "lab",
+      "source": "Current AP-style exam pattern lab",
+      "body": "### Why This Lab Matters\nClass-design FRQs are friendly only if the structure is automatic. The algorithm may be interesting, but students often lose points before the algorithm begins.\n\n### Skeleton to Memorize\nWrite the class, fields, constructor, and methods in separate places.\n\n```java\npublic class Scoreboard {\n  private String team1;\n  private String team2;\n  private int score1;\n  private int score2;\n  private boolean team1Turn;\n\n  public Scoreboard(String t1, String t2) {\n    team1 = t1;\n    team2 = t2;\n    score1 = 0;\n    score2 = 0;\n    team1Turn = true;\n  }\n}\n```\n\n### Design Choices\nInstance variables should store everything that must persist after a method finishes. Local variables vanish when the method ends.\n\nUse a boolean for a two-state situation when possible.\n\n```java\nteam1Turn = !team1Turn;\n```\n\n### Constructor Assignment\nIf parameter names match field names, use `this` or choose different parameter names.\n\n```java\npublic Player(String name) {\n  this.name = name;\n}\n```\n\n### Common Traps\n- `public class Name()` is not a valid class header.\n- A constructor has no return type.\n- Fields should be `private`.\n- Do not redeclare an instance variable as a local variable inside the constructor.\n- Return the specified value; do not replace the return with `System.out.println`.\n\n### Practice\nDesign fields and a constructor for a `Timer` class that stores `minutes`, `seconds`, and whether the timer is running.\n\n<details class=\"answer-toggle\"><summary>Show worked answer</summary><div class=\"answer-body\">\n\n```java\npublic class Timer {\n  private int minutes;\n  private int seconds;\n  private boolean running;\n\n  public Timer(int m, int s) {\n    minutes = m;\n    seconds = s;\n    running = false;\n  }\n}\n```\n\n</div></details>"
+    },
+    {
+      "id": "L-ARRAYLIST-OBJECTS",
+      "title": "ArrayList of Objects: Get, Construct, Add",
+      "unit": "Exam Lab",
+      "type": "lab",
+      "source": "Current AP-style exam pattern lab",
+      "body": "### Why This Lab Matters\nCurrent ArrayList FRQs often store objects from a provided class. The task is not just `add`; it is get an object, call its methods, construct another object, and add that object to a result list.\n\n### Core Pattern\nAn `ArrayList<Student>` stores `Student` references.\n\n```java\nStudent s = roster.get(i);\nint score = s.getScore();\n```\n\nYou can chain the call when it stays readable.\n\n```java\nint score = roster.get(i).getScore();\n```\n\n### Construct Then Add\nIf the result list stores objects, add objects, not raw constructor arguments.\n\n```java\nArrayList<Match> matches = new ArrayList<Match>();\nmatches.add(new Match(players.get(low), players.get(high)));\n```\n\n### Copy vs Alias\nThis does not make a copy:\n\n```java\nArrayList<Student> temp = roster;\n```\n\nBoth names now refer to the same list. If you must preserve the original, build a new list and add the elements you want.\n\n```java\nArrayList<Student> temp = new ArrayList<Student>();\nfor (Student s : roster) {\n  temp.add(s);\n}\n```\n\n### Common Traps\n- `list[i]` is array syntax; use `list.get(i)`.\n- `result.add(a, b)` does not create an object with `a` and `b`.\n- `new Match(i, j)` is wrong if the constructor expects `Competitor` objects.\n- Removing from an alias also removes from the original list.\n\n### Practice\nGiven `ArrayList<Player> players`, create an `ArrayList<Game>` containing one game between the first and last player.\n\n<details class=\"answer-toggle\"><summary>Show worked answer</summary><div class=\"answer-body\">\n\n```java\nArrayList<Game> games = new ArrayList<Game>();\ngames.add(new Game(players.get(0), players.get(players.size() - 1)));\n```\n\n</div></details>"
+    },
+    {
+      "id": "L-UNUSUAL-TRAVERSALS",
+      "title": "Adjacent Pairs and Unusual Traversals",
+      "unit": "Exam Lab",
+      "type": "lab",
+      "source": "Current AP-style exam pattern lab",
+      "body": "### Why This Lab Matters\nMany exam algorithms are not full left-to-right traversals. They compare neighbors, pair the ends, skip one item, or stop at a boundary that depends on another index.\n\n### Adjacent Pair Pattern\nTo compare each item with the previous item, start at index 1.\n\n```java\nfor (int i = 1; i < list.size(); i++) {\n  String prev = list.get(i - 1);\n  String cur = list.get(i);\n}\n```\n\nTo compare each item with the next item, stop before the last index.\n\n```java\nfor (int i = 0; i < list.size() - 1; i++) {\n  String cur = list.get(i);\n  String next = list.get(i + 1);\n}\n```\n\n### Two-End Pairing Pattern\nUse one index from the left and one from the right.\n\n```java\nfor (int left = 0; left < list.size() / 2; left++) {\n  int right = list.size() - 1 - left;\n  // pair list.get(left) with list.get(right)\n}\n```\n\nFor odd sizes, decide whether the middle or first item is skipped before writing the loop.\n\n### Return-After-Search Pattern\nReturn failure only after the whole search has failed.\n\n```java\nfor (int i = 0; i < values.length; i++) {\n  if (values[i] == target) {\n    return true;\n  }\n}\nreturn false;\n```\n\n### Common Traps\n- Starting at 0 and then using `i - 1`.\n- Looping through the last index and then using `i + 1`.\n- Returning `false` inside the loop after the first failed comparison.\n- Computing the right index as `size - i` instead of `size - 1 - i`.\n\n### Practice\nWrite a loop header for comparing every adjacent pair in an `ArrayList<Integer> nums` using `i` and `i + 1`.\n\n<details class=\"answer-toggle\"><summary>Show worked answer</summary><div class=\"answer-body\">\n\n```java\nfor (int i = 0; i < nums.size() - 1; i++) {\n  int a = nums.get(i);\n  int b = nums.get(i + 1);\n}\n```\n\n</div></details>"
+    },
+    {
+      "id": "L-2D-BOUNDARY-SUBSET",
+      "title": "2D Boundaries and Subset Traversals",
+      "unit": "Exam Lab",
+      "type": "lab",
+      "source": "Current AP-style exam pattern lab",
+      "body": "### Why This Lab Matters\nRecent 2D array FRQs ask students to move through a grid without using a normal full traversal. The hard part is usually the boundary condition, not the array access itself.\n\n### Last Row and Last Column\nUse the last valid index, not the length itself.\n\n```java\nrow == grid.length - 1\ncol == grid[row].length - 1\n```\n\n### Guard Before Access\nCheck whether a neighbor exists before reading it.\n\n```java\nif (row + 1 < grid.length) {\n  int below = grid[row + 1][col];\n}\nif (col + 1 < grid[row].length) {\n  int right = grid[row][col + 1];\n}\n```\n\n### Subset Traversal\nIf a method says search row `row` and later rows, start there.\n\n```java\nfor (int r = row; r < grid.length; r++) {\n  for (int c = 0; c < grid[r].length; c++) {\n    // inspect grid[r][c]\n  }\n}\n```\n\n### Same Location vs Same Value\nTwo cells can have the same value but still be different cells. To avoid pairing an element with itself, compare the location.\n\n```java\nif (r != row || c != col) {\n  // not the exact same cell\n}\n```\n\n### Common Traps\n- `grid.length` is the number of rows; `grid[r].length` is the number of columns in row `r`.\n- Out-of-bounds access does not return `null`; it throws an exception.\n- `r != row && c != col` excludes the entire row and column, not just one cell.\n- A loop condition says when to continue, not when to stop.\n\n### Practice\nWrite the condition for a loop that should continue until both `row` and `col` are at the bottom-right corner.\n\n<details class=\"answer-toggle\"><summary>Show worked answer</summary><div class=\"answer-body\">\n\n```java\nwhile (row < grid.length - 1 || col < grid[row].length - 1) {\n  // move row or col toward bottom-right\n}\n```\n\n</div></details>"
+    },
+    {
+      "id": "L-RANDOM-SIMULATION",
+      "title": "Random Simulation with Math.random",
+      "unit": "Exam Lab",
+      "type": "lab",
+      "source": "Current AP-style exam pattern lab",
+      "body": "### Why This Lab Matters\n`Math.random()` appears in both MC and FRQ settings. The tested skill is not just calling the method; it is transforming the double into the exact probability or integer range.\n\n### Core Range Pattern\nFor an inclusive integer range from `min` to `max`:\n\n```java\nint value = (int)(Math.random() * (max - min + 1)) + min;\n```\n\nExamples:\n\n```java\nint die = (int)(Math.random() * 6) + 1;     // 1 through 6\nint digit = (int)(Math.random() * 10);      // 0 through 9\nint food = (int)(Math.random() * 41) + 10;  // 10 through 50\n```\n\n### Probability Pattern\n`Math.random()` returns a double in `[0.0, 1.0)`. Compare it to the desired probability.\n\n```java\nif (Math.random() < 0.05) {\n  // 5% chance\n} else {\n  // 95% chance\n}\n```\n\n### Fill a 2D Array\nRandom generation is often embedded inside a traversal.\n\n```java\nfor (int r = 0; r < grid.length; r++) {\n  for (int c = 0; c < grid[r].length; c++) {\n    grid[r][c] = (int)(Math.random() * 9) + 1;\n  }\n}\n```\n\n### Common Traps\n- `Math.random(6)` is not valid.\n- `(int)Math.random() * 6 + 1` always casts the random double to 0 before scaling.\n- Multiplying by `max` only works when the range starts at 0 and has `max` possible values.\n- A simulation method may change instance variables; count only the days or iterations that actually happen.\n\n### Practice\nWrite code for a 30% event and an integer from 4 through 12 inclusive.\n\n<details class=\"answer-toggle\"><summary>Show worked answer</summary><div class=\"answer-body\">\n\n```java\nif (Math.random() < 0.30) {\n  // event happens\n}\n\nint value = (int)(Math.random() * 9) + 4;\n```\n\n</div></details>"
+    }
+  ],
   "learningPaths": [
     {
       "id": "path-foundations",
@@ -207,6 +273,48 @@ window.APCSA_TUTORIAL_DATA = {
         "4.10",
         "4.13",
         "4.16"
+      ]
+    }
+  ],
+  "examLabs": [
+    {
+      "id": "lab-core-idioms",
+      "navTitle": "Core Idioms",
+      "title": "Core Exam Idioms",
+      "description": "Practice the tiny Java patterns that current AP questions hide inside larger algorithms.",
+      "stepIds": [
+        "L-MODULO-PATTERNS",
+        "L-STRING-SURGERY",
+        "L-RANDOM-SIMULATION",
+        "L-METHOD-SIDE-EFFECTS"
+      ]
+    },
+    {
+      "id": "lab-frq-structures",
+      "navTitle": "FRQ Structures",
+      "title": "FRQ Structure Patterns",
+      "description": "Train the structures that recent FRQs repeatedly test: class design, object lists, traversals, and grid boundaries.",
+      "stepIds": [
+        "L-CLASS-FRQ-CHECKLIST",
+        "L-ARRAYLIST-OBJECTS",
+        "L-UNUSUAL-TRAVERSALS",
+        "L-2D-BOUNDARY-SUBSET"
+      ]
+    },
+    {
+      "id": "lab-all-current",
+      "navTitle": "All Labs",
+      "title": "All Current Exam Pattern Labs",
+      "description": "A compact practice sequence built from recurring patterns in recent AP CSA released questions and reports.",
+      "stepIds": [
+        "L-MODULO-PATTERNS",
+        "L-STRING-SURGERY",
+        "L-RANDOM-SIMULATION",
+        "L-METHOD-SIDE-EFFECTS",
+        "L-CLASS-FRQ-CHECKLIST",
+        "L-ARRAYLIST-OBJECTS",
+        "L-UNUSUAL-TRAVERSALS",
+        "L-2D-BOUNDARY-SUBSET"
       ]
     }
   ],

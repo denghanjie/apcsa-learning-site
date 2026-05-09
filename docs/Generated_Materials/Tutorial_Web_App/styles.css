@@ -117,7 +117,7 @@ textarea:focus-visible {
 
 .mode-tabs {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(54px, 1fr));
   gap: 4px;
   padding: 4px;
   border: 1px solid var(--line);
@@ -133,6 +133,7 @@ textarea:focus-visible {
   color: var(--muted);
   font-size: 12px;
   font-weight: 900;
+  white-space: nowrap;
 }
 
 .mode-tab.active {
