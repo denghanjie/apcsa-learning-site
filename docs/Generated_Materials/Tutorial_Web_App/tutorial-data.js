@@ -131,6 +131,54 @@ window.APCSA_TUTORIAL_DATA = {
       "type": "lab",
       "source": "Current AP-style exam pattern lab",
       "body": "### Why This Lab Matters\n`Math.random()` appears in both MC and FRQ settings. The tested skill is not just calling the method; it is transforming the double into the exact probability or integer range.\n\n### Core Range Pattern\nFor an inclusive integer range from `min` to `max`:\n\n```java\nint value = (int)(Math.random() * (max - min + 1)) + min;\n```\n\nExamples:\n\n```java\nint die = (int)(Math.random() * 6) + 1;     // 1 through 6\nint digit = (int)(Math.random() * 10);      // 0 through 9\nint food = (int)(Math.random() * 41) + 10;  // 10 through 50\n```\n\n### Probability Pattern\n`Math.random()` returns a double in `[0.0, 1.0)`. Compare it to the desired probability.\n\n```java\nif (Math.random() < 0.05) {\n  // 5% chance\n} else {\n  // 95% chance\n}\n```\n\n### Fill a 2D Array\nRandom generation is often embedded inside a traversal.\n\n```java\nfor (int r = 0; r < grid.length; r++) {\n  for (int c = 0; c < grid[r].length; c++) {\n    grid[r][c] = (int)(Math.random() * 9) + 1;\n  }\n}\n```\n\n### Common Traps\n- `Math.random(6)` is not valid.\n- `(int)Math.random() * 6 + 1` always casts the random double to 0 before scaling.\n- Multiplying by `max` only works when the range starts at 0 and has `max` possible values.\n- A simulation method may change instance variables; count only the days or iterations that actually happen.\n\n### Practice\nWrite code for a 30% event and an integer from 4 through 12 inclusive.\n\n<details class=\"answer-toggle\"><summary>Show worked answer</summary><div class=\"answer-body\">\n\n```java\nif (Math.random() < 0.30) {\n  // event happens\n}\n\nint value = (int)(Math.random() * 9) + 4;\n```\n\n</div></details>"
+    },
+    {
+      "id": "L-SPEC-READING",
+      "title": "Specification Reading: Translate Words into Code",
+      "unit": "Exam Lab",
+      "type": "lab",
+      "source": "Current AP-style exam pattern lab",
+      "body": "### Why This Lab Matters\nRecent AP-style questions reward students who read the problem contract carefully before writing code. Many wrong solutions use correct Java for the wrong task.\n\n### The Contract Checklist\nBefore coding, mark these items in the prompt:\n\n1. What method or constructor must be written?\n2. What parameters are available?\n3. What value must be returned, if any?\n4. What state must change?\n5. What state must not change?\n6. What helper methods or classes are already provided?\n7. What special cases are named in the prompt?\n\n### Turn Sentences into Decisions\nTranslate each important sentence into a coding obligation.\n\n| Prompt language | Coding habit |\n| --- | --- |\n| returns the first | search, then return as soon as found |\n| returns `-1` if none | return failure after the whole search |\n| does not change the original list | build a new list or copy first |\n| for each available hour | loop over the stated hour range, not necessarily 0 to n - 1 |\n| if the string is empty | handle before substring access |\n\n### State-Change Questions\nAsk these before writing every method call:\n\n- Am I reading information?\n- Am I changing an object or collection?\n- Do I need the old value before the change?\n- Does the prompt say the original data must stay unchanged?\n\n### Common Traps\n- Ignoring a provided helper method and rewriting too much.\n- Using a loop from 0 when the prompt gives a different starting value.\n- Printing a value when the method should return it.\n- Forgetting a named special case such as empty input, no match, or odd size.\n\n### Practice\nA prompt says: write `firstLongWord`, which returns the first word with length at least `minLen`, or returns `null` if there is no such word. The original list should not be modified. What are the coding obligations?\n\n<details class=\"answer-toggle\"><summary>Show worked answer</summary><div class=\"answer-body\">\n\n- Method must return a `String`.\n- Traverse the list from front to back.\n- Check `word.length() >= minLen`.\n- Return immediately when the first match is found.\n- Return `null` only after all words fail.\n- Do not call `remove`, `set`, or otherwise change the original list.\n\n</div></details>"
+    },
+    {
+      "id": "L-MC-TRACE-DRILLS",
+      "title": "AP-Style MC Trace Drills",
+      "unit": "Exam Lab",
+      "type": "lab",
+      "source": "Current AP-style exam pattern lab",
+      "body": "### Why This Lab Matters\nAP multiple-choice questions often test whether students can trace code under time pressure. The concept may be familiar, but the answer depends on one line of index movement, mutation, or precedence.\n\n### Common MC Forms\nPractice recognizing the question type first.\n\n| Question form | What to do |\n| --- | --- |\n| What is printed? | Make a trace table for variables and output |\n| What is returned? | Track return statements and stop when one runs |\n| Which replacement works? | Check type, boundary, and exact behavior |\n| Which statement is equivalent? | Use truth values or De Morgan's laws |\n| Which line causes an error? | Check null, bounds, and invalid method calls |\n\n### Trace Table Habit\nUse one row per loop iteration.\n\n```text\ni | value read | condition | update | result/output\n---|------------|-----------|--------|--------------\n0 |            |           |        |\n1 |            |           |        |\n```\n\n### Mini Drill\nTrace this code before opening the answer.\n\n```java\nint total = 0;\nfor (int k = 1; k <= 5; k++) {\n  if (k % 2 == 1) {\n    total += k;\n  }\n}\nSystem.out.println(total);\n```\n\n<details class=\"answer-toggle\"><summary>Show worked answer</summary><div class=\"answer-body\">\n\n`k` takes the values 1, 2, 3, 4, 5. The odd values are 1, 3, and 5, so `total` becomes 9. The output is `9`.\n\n</div></details>\n\n### Common Traps\n- Reading `k <= 5` as if it stops before 5.\n- Updating the loop variable before using the loop body.\n- Forgetting that `return` exits the method immediately.\n- Treating `add(index, value)` like `set(index, value)`."
+    },
+    {
+      "id": "L-EDGE-CASE-DRILLS",
+      "title": "Edge Case Lab: Test Before You Code",
+      "unit": "Exam Lab",
+      "type": "lab",
+      "source": "Current AP-style exam pattern lab",
+      "body": "### Why This Lab Matters\nReal AP questions frequently hide scoring points inside edge cases. Students who only test the normal case often write code that looks correct but fails the rubric.\n\n### Edge Case Menu\nAfter reading a prompt, choose the cases that match the data type.\n\n| Data type | Edge cases to try |\n| --- | --- |\n| `String` | empty, shorter than target, target absent, target at index 0, target at the end |\n| array | length 0 if allowed, length 1, first element, last element |\n| `ArrayList` | empty, one item, adjacent removals, odd size, even size |\n| 2D array | first row, last row, first column, last column, one row, one column |\n| object references | `null` element, same object referenced twice, changed object state |\n\n### Boundary Template\nBefore writing a loop, write the first and last index in words.\n\n```text\nFirst index visited: ?\nLast index visited: ?\nDoes the loop use i - 1 or i + 1?\nCould i move out of bounds?\n```\n\n### Mini Drill\nA method removes all numbers less than 0 from an `ArrayList<Integer> nums`. What test lists should you try?\n\n<details class=\"answer-toggle\"><summary>Show worked answer</summary><div class=\"answer-body\">\n\n- `[]`\n- `[5]`\n- `[-2]`\n- `[3, -1, 4]`\n- `[-1, -2, 5]` to catch adjacent removal issues\n- `[1, 2, 3]` to confirm no change when nothing is removed\n\n</div></details>\n\n### Common Traps\n- Testing only one middle match.\n- Forgetting that adjacent removals can skip elements when traversing forward.\n- Assuming out-of-bounds access returns `null`.\n- Calling a method on a `null` reference before checking it."
+    },
+    {
+      "id": "L-DISTRACTOR-CLINIC",
+      "title": "Distractor Clinic: Common Wrong Choices",
+      "unit": "Exam Lab",
+      "type": "lab",
+      "source": "Current AP-style exam pattern lab",
+      "body": "### Why This Lab Matters\nAP multiple-choice distractors are often not random. They are built from the exact mistakes students commonly make while coding or tracing.\n\n### Syntax Distractors\nKnow the family differences.\n\n```java\narr.length        // array\nstr.length()      // String\nlist.size()       // ArrayList\narr[i]            // array access\nlist.get(i)       // ArrayList access\n```\n\n### Equality Distractors\nUse `.equals` for object content.\n\n```java\nword.equals(\"quit\")\nname1.equals(name2)\n```\n\n`==` checks primitive equality, or whether two references are the same reference.\n\n### Boolean Distractors\nConvert the English carefully.\n\n```java\n!(a && b)  // same as !a || !b\n!(a || b)  // same as !a && !b\n```\n\n### Collection Distractors\nWatch whether the code changes size or only changes a value.\n\n```java\nlist.set(i, value);       // replace, same size\nlist.add(i, value);       // insert, size grows\nlist.remove(i);           // remove, size shrinks\n```\n\n### Common Traps\n- `ArrayList<int>` instead of `ArrayList<Integer>`.\n- `Math.random(6)` instead of `(int)(Math.random() * 6)`.\n- `substring(start, end)` with an end index that is too large.\n- Returning `false` inside a search loop after the first nonmatch.\n- Using an enhanced for loop when the index is required.\n\n### Practice\nExplain why this condition misses some valid answers:\n\n```java\nif (word.indexOf(\"pre\") > 0) {\n  return word.substring(3);\n}\n```\n\n<details class=\"answer-toggle\"><summary>Show worked answer</summary><div class=\"answer-body\">\n\n`indexOf(\"pre\") > 0` is false when `word` starts with `\"pre\"` at index 0. If the goal is to detect a prefix, the condition should be `word.indexOf(\"pre\") == 0`.\n\n</div></details>"
+    },
+    {
+      "id": "L-RUBRIC-AWARENESS",
+      "title": "FRQ Rubric Awareness and Partial Credit",
+      "unit": "Exam Lab",
+      "type": "lab",
+      "source": "Current AP-style exam pattern lab",
+      "body": "### Why This Lab Matters\nFRQ scoring is usually point-based. A response can be imperfect and still earn many points, but only if the intended structure is clear and the required parts are present.\n\n### What Readers Need to See\nWrite code that shows your intent clearly.\n\n- Correct method or constructor header when requested.\n- Correct use of parameters and instance variables.\n- Correct traversal bounds.\n- Correct condition for the required case.\n- Correct update or return value.\n- Correct handling of named special cases.\n\n### Partial-Credit Mindset\nWhen stuck, earn structure points first.\n\n```java\npublic int countMatches(String target) {\n  int count = 0;\n\n  for (int i = 0; i < words.size(); i++) {\n    // condition and update here\n  }\n\n  return count;\n}\n```\n\nEven before the exact condition is finished, this has the right method shape, local accumulator, traversal, and return pattern.\n\n### Code Hygiene for Digital FRQs\nTyped answers do not have to compile perfectly to receive credit, but readable structure matters.\n\n- Indent loops and conditionals.\n- Use braces when nesting logic.\n- Keep variable names meaningful.\n- Avoid writing multiple unrelated ideas on one line.\n- Do not erase a mostly correct structure just because one detail is uncertain.\n\n### Practice\nA student writes a correct loop but returns the answer inside the loop after the first element. What kind of rubric point is most likely lost?\n\n<details class=\"answer-toggle\"><summary>Show worked answer</summary><div class=\"answer-body\">\n\nThe traversal may not process all required elements, so the algorithm/completeness point is likely lost. The student might still earn points for initializing a variable, accessing elements correctly, or writing the correct method structure.\n\n</div></details>"
+    },
+    {
+      "id": "L-SPIRAL-PRACTICE-ROUTINE",
+      "title": "Mixed Spiral Practice Routine",
+      "unit": "Exam Lab",
+      "type": "lab",
+      "source": "Current AP-style exam pattern lab",
+      "body": "### Why This Lab Matters\nStudents often perform well right after a lesson because the topic is obvious. The exam mixes topics, so practice should also mix topics.\n\n### Weekly AP-Style Set\nAfter every three to four lessons, assign a compact mixed set.\n\n| Part | Suggested size | Purpose |\n| --- | --- | --- |\n| MC trace | 3 questions | speed and accuracy |\n| MC code replacement | 2 questions | syntax and API precision |\n| Edge case short answer | 2 questions | special-case thinking |\n| Mini FRQ | 1 question | structured code writing |\n| Reflection | 3 minutes | name the error pattern |\n\n### Spiral Tags\nEvery question should carry tags so students know what to review after missing it.\n\n```text\nTags: String index, substring boundary, not-found case\nTags: ArrayList removal, index shift, reverse traversal\nTags: 2D boundary, row/column, null guard\n```\n\n### How to Review a Missed Question\nDo not only read the correct answer. Ask:\n\n1. Which line did I misunderstand?\n2. Was the mistake conceptual, syntactic, or tracing-related?\n3. Which edge case would have revealed the bug?\n4. Which tutorial lesson should I revisit?\n\n### Practice\nBuild a 20-minute study block for a student who just learned `String`, loops, and ArrayList basics.\n\n<details class=\"answer-toggle\"><summary>Show worked answer</summary><div class=\"answer-body\">\n\n- 5 minutes: trace two loop-output MC questions.\n- 5 minutes: solve one `indexOf` and `substring` replacement task.\n- 5 minutes: trace one `ArrayList.add`, `set`, and `remove` sequence.\n- 5 minutes: write a mini method that filters a list without modifying the original.\n\n</div></details>"
     }
   ],
   "learningPaths": [
@@ -302,9 +350,23 @@ window.APCSA_TUTORIAL_DATA = {
       ]
     },
     {
+      "id": "lab-ap-style-drills",
+      "navTitle": "AP-Style Drills",
+      "title": "AP-Style Question Drills",
+      "description": "Practice the testing moves behind released AP questions: contract reading, tracing, edge cases, distractors, and partial credit.",
+      "stepIds": [
+        "L-SPEC-READING",
+        "L-MC-TRACE-DRILLS",
+        "L-EDGE-CASE-DRILLS",
+        "L-DISTRACTOR-CLINIC",
+        "L-RUBRIC-AWARENESS",
+        "L-SPIRAL-PRACTICE-ROUTINE"
+      ]
+    },
+    {
       "id": "lab-all-current",
-      "navTitle": "All Labs",
-      "title": "All Current Exam Pattern Labs",
+      "navTitle": "All Fluency",
+      "title": "Complete Exam Fluency Sequence",
       "description": "A compact practice sequence built from recurring patterns in recent AP CSA released questions and reports.",
       "stepIds": [
         "L-MODULO-PATTERNS",
@@ -314,7 +376,13 @@ window.APCSA_TUTORIAL_DATA = {
         "L-CLASS-FRQ-CHECKLIST",
         "L-ARRAYLIST-OBJECTS",
         "L-UNUSUAL-TRAVERSALS",
-        "L-2D-BOUNDARY-SUBSET"
+        "L-2D-BOUNDARY-SUBSET",
+        "L-SPEC-READING",
+        "L-MC-TRACE-DRILLS",
+        "L-EDGE-CASE-DRILLS",
+        "L-DISTRACTOR-CLINIC",
+        "L-RUBRIC-AWARENESS",
+        "L-SPIRAL-PRACTICE-ROUTINE"
       ]
     }
   ],

@@ -93,7 +93,7 @@ function renderModeTabs() {
     { id: "learn", label: "Learn Path", available: (data.learningPaths || []).length > 0 },
     { id: "browse", label: "Topic Review", available: data.units.length > 0 },
     { id: "review", label: "Skill Focus", available: (data.reviewSets || []).length > 0 },
-    { id: "labs", label: "Exam Patterns", available: (data.examLabs || []).length > 0 }
+    { id: "labs", label: "Exam Fluency", available: (data.examLabs || []).length > 0 }
   ].filter((mode) => mode.available);
 
   elements.modeTabs.innerHTML = modes
@@ -195,10 +195,10 @@ function renderReviewNavigation() {
 
 function renderLabNavigation() {
   elements.unitNav.className = "unit-nav picker-nav";
-  elements.unitNav.setAttribute("aria-label", "Exam pattern labs");
+  elements.unitNav.setAttribute("aria-label", "Exam fluency sets");
   elements.unitNav.innerHTML = `
     <label class="context-picker">
-      <span>Exam patterns</span>
+      <span>Exam fluency</span>
       <select id="labPicker">
         ${(data.examLabs || []).map((lab) => {
           const selected = lab.id === state.labId ? " selected" : "";
@@ -450,7 +450,7 @@ function getActiveContext() {
   if (state.mode === "labs") {
     const lab = (data.examLabs || []).find((item) => item.id === state.labId) || data.examLabs[0];
     return {
-      label: "Exam Patterns",
+      label: "Exam Fluency",
       title: lab.title,
       description: lab.description,
       lessons: resolveSteps(lab.stepIds)
